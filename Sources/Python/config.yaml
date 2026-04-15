@@ -1,0 +1,86 @@
+# Detectron2 Configuration for Fuggler Instance Segmentation
+# Based on Mask R-CNN with ResNet-50 backbone
+
+MODEL:
+  BACKBONE:
+    NAME: build_resnet_backbone
+  RESNETS:
+    DEPTH: 50
+    NUM_GROUPS: 1
+    WIDTH_PER_GROUP: 64
+    STRIDE_IN_1X1: false
+    OUT_FEATURES:
+      - res2
+      - res3
+      - res4
+      - res5
+  ANCHOR_GENERATOR:
+    SIZES: [[32], [64], [128], [256], [512]]
+    ASPECT_RATIOS: [[0.5, 1.0, 2.0]]
+  RPN:
+    IN_FEATURES: ["res2", "res3", "res4", "res5"]
+    PRE_NMS_TOPK_TRAIN: 12000
+    PRE_NMS_TOPK_TEST: 6000
+    POST_NMS_TOPK_TRAIN: 2000
+    POST_NMS_TOPK_TEST: 1000
+    NMS_THRESH: 0.7
+  ROI_HEADS:
+    NUM_CLASSES: 9  # 9 body part types
+    BATCH_SIZE_PER_IMAGE: 512
+    POSITIVE_FRACTION: 0.25
+    IN_FEATURES: ["res2", "res3", "res4", "res5"]
+  ROI_BOX_HEAD:
+    POOLER_RESOLUTION: 7
+    POOLER_SAMPLING_RATIO: 0
+    NAME: FastRCNNConvFCHead
+    NUM_CONV: 4
+    NUM_FC: 1
+    CONV_DIM: 256
+  ROI_MASK_HEAD:
+    POOLER_RESOLUTION: 14
+    POOLER_SAMPLING_RATIO: 0
+    NUM_CONV: 16
+    NORM: FrozenBN
+  MASK_ON: true
+
+DATASETS:
+  TRAIN:
+    - fuggler_train
+  TEST:
+    - fuggler_val
+
+DATALOADER:
+  NUM_WORKERS: 4
+  SAMPLER_TRAIN: TrainingSampler
+  ASPECT_RATIO_GROUPING: true
+
+SOLVER:
+  BASE_LR: 0.00025
+  MOMENTUM: 0.9
+  WEIGHT_DECAY: 0.0001
+  WEIGHT_DECAY_NORM: 0.0
+  MAX_ITER: 10000
+  LR_SCHEDULER_NAME: WarmupMultiStepLR
+  STEPS: [7000, 9000]
+  GAMMA: 0.1
+  WARMUP_ITERS: 1000
+  WARMUP_METHOD: linear
+  CHECKPOINT_PERIOD: 500
+  IMS_PER_BATCH: 4
+  TEST:
+    EVAL_PERIOD: 500
+
+INPUT:
+  FORMAT: RGB
+  MIN_SIZE_TRAIN: 640
+  MAX_SIZE_TRAIN: 1333
+  MIN_SIZE_TEST: 640
+  MAX_SIZE_TEST: 1333
+  RANDOM_FLIP: horizontal
+
+TEST:
+  EVAL_PERIOD: 500
+  PER_CLASS_ACCURACY: false
+  KEYPOINT_OKS_SIGMAS: []
+
+OUTPUT_DIR: models
