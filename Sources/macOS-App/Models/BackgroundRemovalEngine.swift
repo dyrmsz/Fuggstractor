@@ -1,6 +1,7 @@
 import Foundation
 import Accelerate
 import AppKit
+import CoreVideo
 
 // MARK: - Background Removal Engine
 
@@ -37,12 +38,12 @@ class BackgroundRemovalEngine {
         context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
 
         // Apply mask to create transparency
-        guard let data = context.data as? UnsafeMutableRawBufferPointer else {
+        guard let rawData = context.data else {
             return nil
         }
 
         applyMaskToAlpha(
-            data: data,
+            rawData: rawData,
             width: width,
             height: height,
             mask: mask
@@ -57,7 +58,7 @@ class BackgroundRemovalEngine {
     }
 
     private func applyMaskToAlpha(
-        data: UnsafeMutableRawBufferPointer,
+        rawData: UnsafeMutableRawPointer,
         width: Int,
         height: Int,
         mask: CVPixelBuffer
@@ -71,7 +72,7 @@ class BackgroundRemovalEngine {
 
         let bytesPerRow = CVPixelBufferGetBytesPerRow(mask)
         let maskPtr = maskData.assumingMemoryBound(to: UInt8.self)
-        let imgPtr = data.baseAddress!.assumingMemoryBound(to: UInt8.self)
+        let imgPtr = rawData.assumingMemoryBound(to: UInt8.self)
 
         // Apply mask: where mask is 0, set alpha to 0
         for y in 0 ..< height {
@@ -109,14 +110,14 @@ class BackgroundRemovalEngine {
 
         context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
 
-        guard let imageBuffer = vImage_Buffer(
-            data: context.data!,
-            height: vImage_Pixel_Count(height),
-            width: vImage_Pixel_Count(width),
-            rowBytes: width * 4
-        ) else {
+        var imageBuffer = vImage_Buffer()
+        guard let contextData = context.data else {
             return nil
         }
+        imageBuffer.data = contextData
+        imageBuffer.height = vImage_Pixel_Count(height)
+        imageBuffer.width = vImage_Pixel_Count(width)
+        imageBuffer.rowBytes = width * 4
 
         // Apply Gaussian blur to alpha channel for feathering
         var buffer = imageBuffer
@@ -202,14 +203,3 @@ class BackgroundRemovalEngine {
     }
 }
 
-// MARK: - vImage Buffer Extension
-
-extension vImage_Buffer {
-    init?(data: UnsafeMutableRawPointer, height: vImage_Pixel_Count, width: vImage_Pixel_Count, rowBytes: Int) {
-        self.init()
-        self.data = data
-        self.height = height
-        self.width = width
-        self.rowBytes = rowBytes
-    }
-}

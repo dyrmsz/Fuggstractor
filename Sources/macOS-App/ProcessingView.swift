@@ -87,7 +87,11 @@ struct DropAreaView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(isTargeted ? Color.accentColor.opacity(0.1) : Color.clear)
-        .border(style: .dashed, color: isTargeted ? .accentColor : .secondary)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(style: StrokeStyle(lineWidth: 2, dash: [5, 3]))
+                .foregroundColor(isTargeted ? .accentColor : .secondary)
+        )
         .cornerRadius(12)
         .onDrop(of: [.fileURL], isTargeted: $isTargeted) { providers in
             for provider in providers {
@@ -305,14 +309,6 @@ struct StatCard: View {
 // MARK: - View Extensions
 
 extension View {
-    func border(style: NSBorderType, color: Color) -> some View {
-        self.overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(style: StrokeStyle(lineWidth: 2, dash: style == .dashed ? [5, 3] : []))
-                .foregroundColor(color)
-        )
-    }
-
     func borderBottom() -> some View {
         self.overlay(
             VStack {

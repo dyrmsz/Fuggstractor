@@ -194,14 +194,13 @@ struct AnnotationCanvasView: View {
                 .scaleEffect(scale)
 
             // Annotation overlays
-            Canvas { context in
-                let imageSize = CGSize(width: image.size.width, height: image.size.height)
-
+            Canvas { context, _ in
                 for annotation in annotations {
                     var path = Path(roundedRect: annotation.rect, cornerRadius: 2)
+                    let partType = BodyPartType(rawValue: annotation.partType) ?? .body
                     context.stroke(
                         path,
-                        with: .color(annotation.partType.color),
+                        with: .color(partType.color),
                         lineWidth: 2
                     )
                 }
@@ -293,11 +292,11 @@ struct AnnotationItemView: View {
     var body: some View {
         HStack(spacing: 8) {
             Circle()
-                .fill(annotation.partType.color)
+                .fill(annotation.bodyPartType.color)
                 .frame(width: 12, height: 12)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(annotation.partType.displayName)
+                Text(annotation.bodyPartType.displayName)
                     .font(.system(size: 11, weight: .semibold))
 
                 Text("(\(Int(annotation.rect.width))×\(Int(annotation.rect.height)))")

@@ -1,6 +1,8 @@
 import Foundation
 import CoreML
 import Vision
+import AppKit
+import CoreVideo
 
 // MARK: - Segmentation Result
 
@@ -66,7 +68,7 @@ class SegmentationEngine {
         let processingTime = Date().timeIntervalSince(startTime)
 
         let confidence = Self.bodyPartClasses.reduce(into: [:]) { dict, className in
-            dict[className] = 0.85  // Placeholder confidence
+            dict[className] = Float(0.85)  // Placeholder confidence
         }
 
         return SegmentationResult(
@@ -96,7 +98,7 @@ class SegmentationEngine {
     }
 
     private func convertImageToPixelBuffer(_ image: NSImage) -> CVPixelBuffer? {
-        guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+        guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: [:]) else {
             return nil
         }
 
@@ -139,7 +141,7 @@ class SegmentationEngine {
 
         context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
 
-        return pixelBuffer
+        return pixelBuffer as CVPixelBuffer
     }
 }
 
