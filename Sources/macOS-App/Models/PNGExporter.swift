@@ -96,10 +96,6 @@ class PNGExporter {
         partIndex: Int,
         baseName: String
     ) -> String {
-        let timestamp = ISO8601DateFormatter().string(from: Date())
-            .replacingOccurrences(of: ":", with: "-")
-            .replacingOccurrences(of: ".", with: "-")
-
         return "\(baseName)_\(partType)_\(partIndex).png"
     }
 

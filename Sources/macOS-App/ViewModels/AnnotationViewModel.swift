@@ -1,5 +1,6 @@
 import SwiftUI
 import Foundation
+import UniformTypeIdentifiers
 
 // MARK: - Annotation Model
 
@@ -86,7 +87,7 @@ class AnnotationViewModel: NSObject, ObservableObject {
 
     func loadImage() {
         let panel = NSOpenPanel()
-        panel.allowedFileTypes = ["public.image"]
+        panel.allowedContentTypes = [.image]
         panel.canChooseDirectories = false
         panel.allowsMultipleSelection = false
 
@@ -127,7 +128,7 @@ class AnnotationViewModel: NSObject, ObservableObject {
         }
 
         let panel = NSSavePanel()
-        panel.allowedFileTypes = ["json"]
+        panel.allowedContentTypes = [.json]
         panel.nameFieldStringValue = imageURL.deletingPathExtension().lastPathComponent + "_annotations"
 
         if panel.runModal() == .OK, let url = panel.url {
