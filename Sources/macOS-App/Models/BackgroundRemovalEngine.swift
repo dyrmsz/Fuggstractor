@@ -115,8 +115,8 @@ class BackgroundRemovalEngine {
             return nil
         }
         imageBuffer.data = contextData
-        imageBuffer.height = vImage_Pixel_Count(height)
-        imageBuffer.width = vImage_Pixel_Count(width)
+        imageBuffer.height = size_t(height)
+        imageBuffer.width = size_t(width)
         imageBuffer.rowBytes = width * 4
 
         // Apply Gaussian blur to alpha channel for feathering

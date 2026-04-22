@@ -75,7 +75,7 @@ struct DropAreaView: View {
 
             Button("Browse Files") {
                 let panel = NSOpenPanel()
-                panel.allowedFileTypes = ["public.image"]
+                panel.allowedContentTypes = [.image]
                 panel.allowsMultipleSelection = true
                 panel.canChooseDirectories = false
 
@@ -96,7 +96,7 @@ struct DropAreaView: View {
         .onDrop(of: [.fileURL], isTargeted: $isTargeted) { providers in
             for provider in providers {
                 provider.loadFileRepresentation(forTypeIdentifier: "public.file-url") { url, _ in
-                    if let url = url as? URL {
+                    if let url = url {
                         DispatchQueue.main.async {
                             onDrop([url])
                         }
