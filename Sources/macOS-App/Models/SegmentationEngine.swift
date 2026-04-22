@@ -141,7 +141,7 @@ class SegmentationEngine {
 
         context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
 
-        return pixelBuffer as CVPixelBuffer
+        return pixelBuffer
     }
 }
 

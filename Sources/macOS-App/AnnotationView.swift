@@ -196,7 +196,7 @@ struct AnnotationCanvasView: View {
             // Annotation overlays
             Canvas { context, _ in
                 for annotation in annotations {
-                    var path = Path(roundedRect: annotation.rect, cornerRadius: 2)
+                    let path = Path(roundedRect: annotation.rect, cornerRadius: 2)
                     let partType = BodyPartType(rawValue: annotation.partType) ?? .body
                     context.stroke(
                         path,
@@ -213,7 +213,7 @@ struct AnnotationCanvasView: View {
                         width: abs(current.x - start.x),
                         height: abs(current.y - start.y)
                     )
-                    var path = Path(roundedRect: rect, cornerRadius: 2)
+                    let path = Path(roundedRect: rect, cornerRadius: 2)
                     context.stroke(
                         path,
                         with: .color(selectedPart.color),
@@ -248,14 +248,6 @@ struct AnnotationCanvasView: View {
                 Spacer()
             }
             .padding(8)
-        }
-        .onContinuousHover { phase in
-            switch phase {
-            case .active(let location):
-                currentPoint = location
-            case .ended:
-                currentPoint = nil
-            }
         }
         .gesture(
             DragGesture(minimumDistance: 5)
